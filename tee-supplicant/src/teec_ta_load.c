@@ -70,6 +70,7 @@ int TEECI_LoadSecureModule(const char* dev_path,
 	char fname[PATH_MAX];
 	FILE *file = NULL;
 	int n;
+	long int pos;
 
 	if (!ta_size || !ta || !destination) {
 		printf("wrong inparameter to TEECI_LoadSecureModule\n");
@@ -109,7 +110,13 @@ int TEECI_LoadSecureModule(const char* dev_path,
 		return TA_BINARY_NOT_FOUND;
 	}
 
-	*ta_size = ftell(file);
+	//vvc
+	if ((pos = ftell(file)) <= 0) {
+		DMSG("failed to ftell the ta %s TA-file", fname);
+		fclose(file);
+		return TA_BINARY_NOT_FOUND;
+	}
+	*ta_size = pos;
 
 	if (fseek(file, 0, SEEK_SET) != 0) {
 		fclose(file);

@@ -291,6 +291,7 @@ static void free_param(TEEC_SharedMemory *shared_mem)
 static void process_fs(int fd, struct tee_rpc_invoke *inv)
 {
 	TEEC_SharedMemory shared_mem;
+	int ret;
 
 	INMSG();
 	if (get_param(fd, inv, 0, &shared_mem)) {
@@ -298,7 +299,11 @@ static void process_fs(int fd, struct tee_rpc_invoke *inv)
 		return;
 	}
 
-	tee_supp_fs_process(shared_mem.buffer, shared_mem.size);
+	//vvc
+	if ((ret = tee_supp_fs_process(shared_mem.buffer, shared_mem.size)) != 0)
+	{
+		EMSG("tee_supp_fs_process error %d", ret);
+	}
 	inv->res = TEEC_SUCCESS;;
 
 	free_param(&shared_mem);
