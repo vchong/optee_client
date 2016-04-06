@@ -334,6 +334,68 @@ void TEEC_CloseSession(TEEC_Session *session)
 	close(session->fd);
 }
 
+TEEC_Result TEEC_MakeSecure(TEEC_Session *session,
+			       uint32_t cmd_id,
+			       TEEC_Operation *operation,
+			       uint32_t *error_origin)
+{
+	INMSG("session: [%p], cmd_id: [%d]", session, cmd_id);
+	struct tee_cmd_io cmd;
+	TEEC_Operation dummy_op;
+	TEEC_Result result = TEEC_SUCCESS;
+	uint32_t origin = TEEC_ORIGIN_API;
+
+	if (session == NULL) {
+		origin = TEEC_ORIGIN_API;
+		result = TEEC_ERROR_BAD_PARAMETERS;
+		EMSG("TEEC_ERROR_BAD_PARAMETERS tee_client_api.c\n");
+		goto error;
+	}
+
+	if (operation == NULL) {
+		/*
+		 * The code here exist because Global Platform API states that
+		 * it is allowed to give operation as a NULL pointer. In kernel
+		 * and secure world we in most cases don't want this to be NULL,
+		 * hence we use this dummy operation when a client doesn't
+		 * provide any operation.
+		 */
+		memset(&dummy_op, 0, sizeof(TEEC_Operation));
+		operation = &dummy_op;
+	}
+
+	teec_mutex_lock(&mutex);
+	operation->session = session;
+	teec_mutex_unlock(&mutex);
+
+	teec_resetTeeCmd(&cmd);
+
+	cmd.cmd = cmd_id;
+	cmd.op = operation;
+
+	if (ioctl(session->fd, TEE_MAKESECURE_IOC, &cmd) != 0)
+		EMSG("Ioctl(TEE_MAKESECURE_IOC) failed! (%s)\n",
+		     strerror(errno));
+
+	if (operation != NULL) {
+		teec_mutex_lock(&mutex);
+
+		operation->session = NULL;
+
+		teec_mutex_unlock(&mutex);
+	}
+
+	origin = cmd.origin;
+	result = cmd.err;
+
+error:
+
+	if (error_origin != NULL)
+		*error_origin = origin;
+
+	OUTRMSG(result);
+}
+
 /*
  * Invokes a TEE command (secure service, sub-PA or whatever).
  */

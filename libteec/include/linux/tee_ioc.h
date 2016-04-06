@@ -73,5 +73,6 @@ struct tee_shm_io {
 #define TEE_REQUEST_CANCELLATION_IOC	_IOWR('t', 164, struct tee_cmd_io)
 #define TEE_ALLOC_SHM_IOC		_IOWR('t', 165, struct tee_shm_io)
 #define TEE_GET_FD_FOR_RPC_SHM_IOC	_IOWR('t', 167, struct tee_shm_io)
+#define TEE_MAKESECURE_IOC	_IOWR('t', 169, struct tee_cmd_io)
 
 #endif /* _TEE_IOC_H */

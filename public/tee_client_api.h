@@ -132,6 +132,8 @@
 #define TEEC_MEM_OUTPUT  0x00000002
 #define TEEC_MEM_DMABUF  0x00010000
 #define TEEC_MEM_KAPI    0x00020000
+#define TEEC_MEM_SECURE  0x00040000
+#define TEESMC_CMD_SHM_MAKE_SECURE 4
 
 /**
  * Return values. Type is TEEC_Result
@@ -505,6 +507,11 @@ void TEEC_CloseSession(TEEC_Session *session);
  * @return TEEC_Result   Something failed.
  */
 TEEC_Result TEEC_InvokeCommand(TEEC_Session *session,
+			       uint32_t commandID,
+			       TEEC_Operation *operation,
+			       uint32_t *returnOrigin);
+
+TEEC_Result TEEC_MakeSecure(TEEC_Session *session,
 			       uint32_t commandID,
 			       TEEC_Operation *operation,
 			       uint32_t *returnOrigin);
