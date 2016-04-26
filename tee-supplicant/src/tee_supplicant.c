@@ -298,9 +298,15 @@ static int open_dev(const char *devname)
 	struct tee_ioctl_version_data vers;
 	int fd;
 
-	fd = open(devname, O_RDWR);
+	fd = open(devname, O_RDWR | O_CREAT | O_EXCL);
 	if (fd < 0)
+	{
+		//if (errno == EEXIST)
+		{
+			EMSG ("%s %d %d: An instance of %s has already been opened.\n", strerror(errno), errno, EEXIST, devname);
+		}
 		return -1;
+	}
 
 	if (ioctl(fd, TEE_IOC_VERSION, &vers))
 		goto err;
@@ -360,79 +366,11 @@ out:
 	OUTMSG();
 }
 
-/*
- * http://stackoverflow.com/questions/6898337/determine-programmatically-if-a-program-is-running
- */
-static int proc_find(const char* name)
-{
-	DIR* dir;
-	struct dirent* ent;
-	char* endptr;
-	char buf[512];
-	int found = 0;
-
-	if (!(dir = opendir("/proc")))
-	{
-		EMSG("can't open /proc");
-		return -1;
-	}
-
-	while((ent = readdir(dir)) != NULL)
-	{
-		/*
-		 * if endptr is not a null character, the directory is not
-		 * entirely numeric, so ignore it
-		 */
-		long lpid = strtol(ent->d_name, &endptr, 10);
-		if (*endptr != '\0')
-		{
-			continue;
-		}
-
-		/* try to open the cmdline file */
-		snprintf(buf, sizeof(buf), "/proc/%ld/cmdline", lpid);
-		FILE* fp = fopen(buf, "r");
-
-		if (fp)
-		{
-			if (fgets(buf, sizeof(buf), fp) != NULL)
-			{
-				/* check the first token in the file, the program name */
-				char* first = strtok(buf, " ");
-				if (!strcmp(first, name))
-				{
-					found++;
-
-					if (found == 2)
-					{
-						fclose(fp);
-						closedir(dir);
-						return found;
-					}
-				}
-			}
-			fclose(fp);
-		}
-	}
-
-	closedir(dir);
-	return found;
-}
-
 int main(int argc, char *argv[])
 {
 	int fd;
 	union tee_rpc_invoke request;
 	int ret;
-	int num_proc;
-
-	/* If tee-supplicant already running, let user know and exit without loading. */
-	num_proc = proc_find(argv[0]);
-	if (num_proc == 2)
-	{
-		EMSG ("%s already running.\n", argv[0]);
-		return EXIT_FAILURE;
-	}
 
 	if (argc > 2)
 		return usage();
