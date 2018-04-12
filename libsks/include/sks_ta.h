@@ -507,6 +507,19 @@ struct sks_reference {
 #define SKS_CMD_SET_ATTRIBUTE_VALUE	0x00000022
 
 /*
+ * SKS_CMD_DERIVE_KEY - Create a key by derivation of a provisionned key
+ *
+ * param#0: in(*)-memref : [uint32_t session_handle]
+ *			   [struct sks_reference proc + proc parameters data]
+ *			   [uint32_t key_handle]
+ *			   [struct sks_object_head attribs + attributes data]
+ * param#1: none
+ * param#2: out-memref : [uint32_t object_handle]
+ * param#3: none
+ */
+#define SKS_CMD_DERIVE_KEY		0x00000023
+
+/*
  * Return codes
  */
 #define SKS_OK				0x00000000	/* Success */
