@@ -11,16 +11,16 @@
 # CFG_TEE_CLIENT_LOG_LEVEL
 #   Client (User Non Secure) log level
 #   Supported values: 0 (no traces) to 4 (all traces)
-CFG_TEE_CLIENT_LOG_LEVEL?=1
+CFG_TEE_CLIENT_LOG_LEVEL?=4
 
 # CFG_TEE_SUPP_LOG_LEVEL
 #   Supplicant log level
 #   Supported values: 0 (no traces) to 4 (all traces)
-CFG_TEE_SUPP_LOG_LEVEL?=1
+CFG_TEE_SUPP_LOG_LEVEL?=4
 
 # CFG_TEE_DATA_PATH
 #   Specify the root path for the TEE data directory.
-CFG_TEE_DATA_PATH ?= /data/vendor_de/tee
+CFG_TEE_DATA_PATH ?= $(CFG_TEE_FS_PARENT_PATH)/vendor_de/tee
 
 # CFG_TEE_LOGS_PATH
 #   Specify the root path for the TEE logs directory.
