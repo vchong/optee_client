@@ -18,8 +18,18 @@ CFG_TEE_CLIENT_LOG_LEVEL?=4
 #   Supported values: 0 (no traces) to 4 (all traces)
 CFG_TEE_SUPP_LOG_LEVEL?=4
 
+# CFG_TEE_FS_PARENT_PATH
+#   Path to folder that will contain TEE filesystem.
+#   This folder can be created with the required permission in an init
+#   script during boot, else it'll be created by the tee-supplicant on
+#   the first instance the REE FS is required
+CFG_TEE_FS_PARENT_PATH ?= /data
+
 # CFG_TEE_DATA_PATH
 #   Specify the root path for the TEE data directory.
+#   This folder can be created with the required permission in an init
+#   script during boot, else it'll be created by the tee-supplicant on
+#   the first instance the REE FS is required
 CFG_TEE_DATA_PATH ?= $(CFG_TEE_FS_PARENT_PATH)/vendor_de/tee
 
 # CFG_TEE_LOGS_PATH
@@ -28,17 +38,12 @@ CFG_TEE_DATA_PATH ?= $(CFG_TEE_FS_PARENT_PATH)/vendor_de/tee
 CFG_TEE_LOGS_PATH ?= $(CFG_TEE_DATA_PATH)/logs
 
 # CFG_TEE_CLIENT_LOG_FILE
-# The location of the client log file when logging to file is enabled.
+#   The location of the client log file when logging to file is enabled.
 CFG_TEE_CLIENT_LOG_FILE ?= $(CFG_TEE_LOGS_PATH)/teec.log
 
 # CFG_TEE_CLIENT_LOAD_PATH
-# The location of the client library file.
+#   The location of the client library file.
 CFG_TEE_CLIENT_LOAD_PATH ?= /lib
-
-# CFG_TEE_FS_PARENT_PATH
-# Path to folder that will contain TEE filesystem.
-# This folder should be created before tee-supplicant start.
-CFG_TEE_FS_PARENT_PATH ?= /data
 
 # CFG_TA_TEST_PATH
 # Enable the tee test path.  When enabled, the supplicant will try
@@ -47,7 +52,7 @@ CFG_TEE_FS_PARENT_PATH ?= /data
 CFG_TA_TEST_PATH ?= y
 
 # CFG_GP_SOCKETS
-# Enable Global Platform Sockets support
+#   Enable Global Platform Sockets support
 CFG_GP_SOCKETS ?= y
 
 # Default output directory.
