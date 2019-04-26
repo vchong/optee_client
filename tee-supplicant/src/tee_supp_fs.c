@@ -60,22 +60,6 @@ static pthread_mutex_t dir_handle_db_mutex = PTHREAD_MUTEX_INITIALIZER;
 static struct handle_db dir_handle_db =
 		HANDLE_DB_INITIALIZER_WITH_MUTEX(&dir_handle_db_mutex);
 
-static size_t tee_fs_get_absolute_filename(char *file, char *out,
-					   size_t out_size)
-{
-	int s = 0;
-
-	if (!file || !out || (out_size <= strlen(tee_fs_root) + 1))
-		return 0;
-
-	s = snprintf(out, out_size, "%s%s", tee_fs_root, file);
-	if (s < 0 || (size_t)s >= out_size)
-		return 0;
-
-	/* Safe to cast since we have checked that sizes are OK */
-	return (size_t)s;
-}
-
 static int do_mkdir(const char *path, mode_t mode)
 {
 	struct stat st;
@@ -116,7 +100,7 @@ static int mkpath(const char *path, mode_t mode)
 	return status;
 }
 
-int tee_supp_fs_init(void)
+static int tee_supp_fs_init(void)
 {
 	size_t n = 0;
 	mode_t mode = 0700;
@@ -129,6 +113,27 @@ int tee_supp_fs_init(void)
 		return -1;
 
 	return 0;
+}
+
+static size_t tee_fs_get_absolute_filename(char *file, char *out,
+					   size_t out_size)
+{
+	int s = 0;
+
+	if (!strlen(tee_fs_root)) {
+		if (tee_supp_fs_init())
+			return 0;
+	}
+
+	if (!file || !out || (out_size <= strlen(tee_fs_root) + 1))
+		return 0;
+
+	s = snprintf(out, out_size, "%s%s", tee_fs_root, file);
+	if (s < 0 || (size_t)s >= out_size)
+		return 0;
+
+	/* Safe to cast since we have checked that sizes are OK */
+	return (size_t)s;
 }
 
 static int open_wrapper(const char *fname, int flags)
