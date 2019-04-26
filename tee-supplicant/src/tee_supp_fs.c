@@ -615,6 +615,10 @@ TEEC_Result tee_supp_fs_process(size_t num_params,
 	if (!num_params || !tee_supp_param_is_value(params))
 		return TEEC_ERROR_BAD_PARAMETERS;
 
+	EMSG("##########################");
+	EMSG("tee_supp_fs_process %llu", params->u.value.a);
+	EMSG("##########################");
+
 	switch (params->u.value.a) {
 	case OPTEE_MRF_OPEN:
 		return ree_fs_new_open(num_params, params);

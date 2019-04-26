@@ -693,15 +693,27 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	EMSG("##########################");
+	EMSG("daemonized!");
+	EMSG("##########################");
+
 	if (daemonize && daemon(0, 0) < 0) {
 		EMSG("daemon(): %s", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
+	EMSG("##########################");
+	EMSG("shld nvr here!");
+	EMSG("##########################");
+
 	while (!arg.abort) {
 		if (!process_one_request(&arg))
 			arg.abort = true;
 	}
+
+	EMSG("##########################");
+	EMSG("shld nvr here too!");
+	EMSG("##########################");
 
 	close(arg.fd);
 
