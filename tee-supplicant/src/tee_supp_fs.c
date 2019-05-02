@@ -616,7 +616,8 @@ TEEC_Result tee_supp_fs_process(size_t num_params,
 		if (tee_supp_fs_init() != 0) {
 			EMSG("error tee_supp_fs_init: failed to create %s/tee/",
 				TEE_FS_PARENT_PATH);
-			return TEEC_ERROR_GENERIC;
+			memset(tee_fs_root, 0, sizeof(tee_fs_root));
+			return TEEC_ERROR_STORAGE_NOT_AVAILABLE;
 		}
 	}
 
