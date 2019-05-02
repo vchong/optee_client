@@ -151,7 +151,7 @@ static int mmc_rpmb_fd(uint16_t dev_id)
 	static int id;
 	static int fd = -1;
 	char path[PATH_MAX] = { 0 };
-
+DMSG("in");
 	if (fd < 0) {
 #ifdef __ANDROID__
 		snprintf(path, sizeof(path), "/dev/block/mmcblk%urpmb", dev_id);
@@ -177,7 +177,7 @@ static int mmc_fd(uint16_t dev_id)
 {
 	int fd = 0;
 	char path[PATH_MAX] = { 0 };
-
+DMSG("in");
 #ifdef __ANDROID__
 	snprintf(path, sizeof(path), "/dev/block/mmcblk%u", dev_id);
 #else
@@ -192,6 +192,7 @@ static int mmc_fd(uint16_t dev_id)
 
 static void close_mmc_fd(int fd)
 {
+	DMSG("in");
 	close(fd);
 }
 
@@ -204,7 +205,7 @@ static uint32_t read_cid(uint16_t dev_id, uint8_t *cid)
 	int st = 0;
 	int fd = 0;
 	int i = 0;
-
+DMSG("in");
 	snprintf(path, sizeof(path),
 		 "/sys/class/mmc_host/mmc%u/mmc%u:0001/cid", dev_id, dev_id);
 	fd = open(path, O_RDONLY);
@@ -260,7 +261,7 @@ static struct rpmb_emu rpmb_emu = {
 static struct rpmb_emu *mem_for_fd(int fd)
 {
 	static int sfd = -1;
-
+DMSG("in");
 	if (sfd == -1)
 		sfd = fd;
 	if (sfd != fd) {
@@ -277,7 +278,7 @@ static void dump_blocks(size_t startblk, size_t numblk, uint8_t *ptr,
 {
 	char msg[100] = { 0 };
 	size_t i = 0;
-
+DMSG("in");
 	for (i = 0; i < numblk; i++) {
 		snprintf(msg, sizeof(msg), "%s MMC block %zu",
 			 to_mmc ? "Write" : "Read", startblk + i);
@@ -289,6 +290,7 @@ static void dump_blocks(size_t startblk, size_t numblk, uint8_t *ptr,
 static void dump_blocks(size_t startblk, size_t numblk, uint8_t *ptr,
 			bool to_mmc)
 {
+	DMSG("in");
 	(void)startblk;
 	(void)numblk;
 	(void)ptr;
@@ -299,6 +301,7 @@ static void dump_blocks(size_t startblk, size_t numblk, uint8_t *ptr,
 #define CUC(x) ((const unsigned char *)(x))
 static void hmac_update_frm(hmac_sha256_ctx *ctx, struct rpmb_data_frame *frm)
 {
+	DMSG("in");
 	hmac_sha256_update(ctx, CUC(frm->data), 256);
 	hmac_sha256_update(ctx, CUC(frm->nonce), 16);
 	hmac_sha256_update(ctx, CUC(&frm->write_counter), 4);
@@ -314,7 +317,7 @@ static bool is_hmac_valid(struct rpmb_emu *mem, struct rpmb_data_frame *frm,
 	uint8_t mac[32] = { 0 };
 	size_t i = 0;
 	hmac_sha256_ctx ctx;
-
+DMSG("in");
 	memset(&ctx, 0, sizeof(ctx));
 
 	if (!mem->key_set) {
@@ -340,7 +343,7 @@ static uint16_t compute_hmac(struct rpmb_emu *mem, struct rpmb_data_frame *frm,
 {
 	size_t i = 0;
 	hmac_sha256_ctx ctx;
-
+DMSG("in");
 	memset(&ctx, 0, sizeof(ctx));
 
 	if (!mem->key_set) {
@@ -365,7 +368,7 @@ static uint16_t ioctl_emu_mem_transfer(struct rpmb_emu *mem,
 	size_t size = nfrm * 256;
 	size_t i = 0;
 	uint8_t *memptr = NULL;
-
+DMSG("in");
 	if (start > mem->size || start + size > mem->size) {
 		EMSG("Transfer bounds exceeed emulated memory");
 		return RPMB_RESULT_ADDRESS_FAILURE;
@@ -404,6 +407,7 @@ static uint16_t ioctl_emu_mem_transfer(struct rpmb_emu *mem,
 static void ioctl_emu_get_write_result(struct rpmb_emu *mem,
 				       struct rpmb_data_frame *frm)
 {
+	DMSG("in");
 	frm->msg_type =	htons(RPMB_MSG_TYPE_RESP_AUTH_DATA_WRITE);
 	frm->op_result = mem->last_op.op_result;
 	frm->address = htons(mem->last_op.address);
@@ -414,6 +418,7 @@ static void ioctl_emu_get_write_result(struct rpmb_emu *mem,
 static uint16_t ioctl_emu_setkey(struct rpmb_emu *mem,
 				 struct rpmb_data_frame *frm)
 {
+	DMSG("in");
 	if (mem->key_set) {
 		EMSG("Key already set");
 		return RPMB_RESULT_GENERAL_FAILURE;
@@ -428,6 +433,7 @@ static uint16_t ioctl_emu_setkey(struct rpmb_emu *mem,
 static void ioctl_emu_get_keyprog_result(struct rpmb_emu *mem,
 					 struct rpmb_data_frame *frm)
 {
+	DMSG("in");
 	frm->msg_type =
 		htons(RPMB_MSG_TYPE_RESP_AUTH_KEY_PROGRAM);
 	frm->op_result = mem->last_op.op_result;
@@ -445,6 +451,7 @@ static void ioctl_emu_read_ctr(struct rpmb_emu *mem,
 
 static uint32_t read_cid(uint16_t dev_id, uint8_t *cid)
 {
+	DMSG("in");
 	/* Taken from an actual eMMC chip */
 	static const uint8_t test_cid[] = {
 		/* MID (Manufacturer ID): Micron */
@@ -476,6 +483,7 @@ static uint32_t read_cid(uint16_t dev_id, uint8_t *cid)
 
 static void ioctl_emu_set_ext_csd(uint8_t *ext_csd)
 {
+	DMSG("in");
 	ext_csd[168] = EMU_RPMB_SIZE_MULT;
 	ext_csd[222] = EMU_RPMB_REL_WR_SEC_C;
 }
@@ -483,6 +491,7 @@ static void ioctl_emu_set_ext_csd(uint8_t *ext_csd)
 /* A crude emulation of the MMC ioctls we need for RPMB */
 static int ioctl_emu(int fd, unsigned long request, ...)
 {
+	DMSG("in");
 	struct mmc_ioc_cmd *cmd = NULL;
 	struct rpmb_data_frame *frm = NULL;
 	uint16_t msg_type = 0;
@@ -571,6 +580,7 @@ static int ioctl_emu(int fd, unsigned long request, ...)
 
 static int mmc_rpmb_fd(uint16_t dev_id)
 {
+	DMSG("in");
 	(void)dev_id;
 
 	/* Any value != -1 will do in test mode */
@@ -579,6 +589,7 @@ static int mmc_rpmb_fd(uint16_t dev_id)
 
 static int mmc_fd(uint16_t dev_id)
 {
+	DMSG("in");
 	(void)dev_id;
 
 	return 0;
@@ -586,6 +597,7 @@ static int mmc_fd(uint16_t dev_id)
 
 static void close_mmc_fd(int fd)
 {
+	DMSG("in");
 	(void)fd;
 }
 
@@ -604,7 +616,7 @@ static uint32_t read_ext_csd(int fd, uint8_t *ext_csd)
 		.flags = MMC_RSP_R1 | MMC_CMD_ADTC,
 		.opcode = MMC_SEND_EXT_CSD,
 	};
-
+DMSG("in");
 	mmc_ioc_cmd_set_data(cmd, ext_csd);
 
 	st = IOCTL(fd, MMC_IOC_CMD, &cmd);
@@ -629,7 +641,7 @@ static uint32_t rpmb_data_req(int fd, struct rpmb_data_frame *req_frm,
 		.opcode = MMC_WRITE_MULTIPLE_BLOCK,
 		.write_flag = 1,
 	};
-
+DMSG("in");
 	for (i = 1; i < req_nfrm; i++) {
 		if (req_frm[i].msg_type != msg_type) {
 			EMSG("All request frames shall be of the same type");
@@ -725,7 +737,7 @@ static uint32_t rpmb_get_dev_info(uint16_t dev_id, struct rpmb_dev_info *info)
 	int fd = 0;
 	uint32_t res = 0;
 	uint8_t ext_csd[512] = { 0 };
-
+DMSG("in");
 	res = read_cid(dev_id, info->cid);
 	if (res != TEEC_SUCCESS)
 		return res;
@@ -760,7 +772,7 @@ static uint32_t rpmb_process_request_unlocked(void *req, size_t req_size,
 	size_t rsp_nfrm = 0;
 	uint32_t res = 0;
 	int fd = 0;
-
+DMSG("in");
 	if (req_size < sizeof(*sreq))
 		return TEEC_ERROR_BAD_PARAMETERS;
 
@@ -799,7 +811,7 @@ uint32_t rpmb_process_request(void *req, size_t req_size, void *rsp,
 			      size_t rsp_size)
 {
 	uint32_t res = 0;
-
+DMSG("in");
 	tee_supp_mutex_lock(&rpmb_mutex);
 	res = rpmb_process_request_unlocked(req, req_size, rsp, rsp_size);
 	tee_supp_mutex_unlock(&rpmb_mutex);

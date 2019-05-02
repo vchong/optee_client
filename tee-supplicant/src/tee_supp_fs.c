@@ -64,7 +64,7 @@ static size_t tee_fs_get_absolute_filename(char *file, char *out,
 					   size_t out_size)
 {
 	int s = 0;
-
+DMSG("in");
 	if (!file || !out || (out_size <= strlen(tee_fs_root) + 1))
 		return 0;
 
@@ -79,7 +79,7 @@ static size_t tee_fs_get_absolute_filename(char *file, char *out,
 static int do_mkdir(const char *path, mode_t mode)
 {
 	struct stat st;
-
+DMSG("in");
 	memset(&st, 0, sizeof(st));
 
 	if (mkdir(path, mode) != 0 && errno != EEXIST)
@@ -97,7 +97,7 @@ static int mkpath(const char *path, mode_t mode)
 	char *subpath = strdup(path);
 	char *prev = subpath;
 	char *curr = NULL;
-
+DMSG("in");
 	while (status == 0 && (curr = strchr(prev, '/')) != 0) {
 		/*
 		 * Check for root or double slash
@@ -120,7 +120,7 @@ static int tee_supp_fs_init(void)
 {
 	size_t n = 0;
 	mode_t mode = 0700;
-
+DMSG("in");
 	n = snprintf(tee_fs_root, sizeof(tee_fs_root), "%s/tee/", TEE_FS_PARENT_PATH);
 	if (n >= sizeof(tee_fs_root))
 		return -1;
@@ -134,7 +134,7 @@ static int tee_supp_fs_init(void)
 static int open_wrapper(const char *fname, int flags)
 {
 	int fd = 0;
-
+DMSG("in");
 	while (true) {
 		fd = open(fname, flags | O_SYNC, 0600);
 		if (fd >= 0 || errno != EINTR)
@@ -148,7 +148,7 @@ static TEEC_Result ree_fs_new_open(size_t num_params,
 	char abs_filename[PATH_MAX] = { 0 };
 	char *fname = NULL;
 	int fd = 0;
-
+DMSG("in");
 	if (num_params != 3 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT ||
@@ -190,7 +190,7 @@ static TEEC_Result ree_fs_new_create(size_t num_params,
 	char *d = NULL;
 	int fd = 0;
 	const int flags = O_RDWR | O_CREAT | O_TRUNC;
-
+DMSG("in");
 	if (num_params != 3 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT ||
@@ -264,7 +264,7 @@ static TEEC_Result ree_fs_new_close(size_t num_params,
 				    struct tee_ioctl_param *params)
 {
 	int fd = 0;
-
+DMSG("in");
 	if (num_params != 1 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT)
@@ -331,7 +331,7 @@ static TEEC_Result ree_fs_new_write(size_t num_params,
 	off_t offs = 0;
 	int fd = 0;
 	ssize_t r = 0;
-
+DMSG("in");
 	if (num_params != 2 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT ||
@@ -368,7 +368,7 @@ static TEEC_Result ree_fs_new_truncate(size_t num_params,
 {
 	size_t len = 0;
 	int fd = 0;
-
+DMSG("in");
 	if (num_params != 1 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT)
@@ -435,7 +435,7 @@ static TEEC_Result ree_fs_new_rename(size_t num_params,
 	char *old_fname = NULL;
 	char *new_fname = NULL;
 	bool overwrite = false;
-
+DMSG("in");
 	if (num_params != 3 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT ||
@@ -485,7 +485,7 @@ static TEEC_Result ree_fs_new_opendir(size_t num_params,
 	int handle = 0;
 	struct dirent *dent = NULL;
 	bool empty = true;
-
+DMSG("in");
 	if (num_params != 3 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT ||
@@ -545,7 +545,7 @@ static TEEC_Result ree_fs_new_closedir(size_t num_params,
 				       struct tee_ioctl_param *params)
 {
 	DIR *dir = NULL;
-
+DMSG("in");
 	if (num_params != 1 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT)
@@ -568,7 +568,7 @@ static TEEC_Result ree_fs_new_readdir(size_t num_params,
 	char *buf = NULL;
 	size_t len = 0;
 	size_t fname_len = 0;
-
+DMSG("in");
 	if (num_params != 2 ||
 	    (params[0].attr & TEE_IOCTL_PARAM_ATTR_TYPE_MASK) !=
 			TEE_IOCTL_PARAM_ATTR_TYPE_VALUE_INPUT ||
@@ -607,6 +607,8 @@ static TEEC_Result ree_fs_new_readdir(size_t num_params,
 TEEC_Result tee_supp_fs_process(size_t num_params,
 				struct tee_ioctl_param *params)
 {
+	DMSG("in");
+
 	if (!num_params || !tee_supp_param_is_value(params))
 		return TEEC_ERROR_BAD_PARAMETERS;
 
