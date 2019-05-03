@@ -30,7 +30,7 @@ CFG_TEE_FS_PARENT_PATH ?= /data
 #   This folder can be created with the required permission in an init
 #   script during boot, else it'll be created by the tee-supplicant on
 #   the first instance the REE FS is required
-CFG_TEE_DATA_PATH ?= $(CFG_TEE_FS_PARENT_PATH)/vendor_de/tee
+CFG_TEE_DATA_PATH ?= $(CFG_TEE_FS_PARENT_PATH)/tee
 
 # CFG_TEE_LOGS_PATH
 #   Specify the root path for the TEE logs directory.
