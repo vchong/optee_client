@@ -4,7 +4,7 @@ include ../config.mk
 OUT_DIR := $(OO)/tee-supplicant
 
 # Emulate RPMB ioctl's
-RPMB_EMU	:= 1
+RPMB_EMU	:= 0
 
 .PHONY: all tee-supplicant clean
 
