@@ -11,12 +11,12 @@
 # CFG_TEE_CLIENT_LOG_LEVEL
 #   Client (User Non Secure) log level
 #   Supported values: 0 (no traces) to 4 (all traces)
-CFG_TEE_CLIENT_LOG_LEVEL?=1
+CFG_TEE_CLIENT_LOG_LEVEL?=4
 
 # CFG_TEE_SUPP_LOG_LEVEL
 #   Supplicant log level
 #   Supported values: 0 (no traces) to 4 (all traces)
-CFG_TEE_SUPP_LOG_LEVEL?=1
+CFG_TEE_SUPP_LOG_LEVEL?=4
 
 # CFG_TEE_FS_PARENT_PATH
 #   Path to folder that will contain TEE filesystem.

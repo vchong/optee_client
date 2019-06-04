@@ -15,7 +15,7 @@ endif()
 ################################################################################
 option (CFG_TEE_BENCHMARK "Build with benchmark support" OFF)
 
-set (CFG_TEE_CLIENT_LOG_LEVEL "1" CACHE STRING "libteec log level")
+set (CFG_TEE_CLIENT_LOG_LEVEL "4" CACHE STRING "libteec log level")
 set (CFG_TEE_CLIENT_LOG_FILE "/data/tee/teec.log" CACHE STRING "Location of libteec log")
 
 ################################################################################
