@@ -236,6 +236,17 @@ err:
 
 #else /* RPMB_EMU */
 
+#define RPMB_MSB1ST_RESULT_OK				0x0000
+#define RPMB_MSB1ST_RESULT_GENERAL_FAILURE		0x0100
+#define RPMB_MSB1ST_RESULT_AUTH_FAILURE		0x0200
+#define RPMB_MSB1ST_RESULT_COUNTER_FAILURE		0x0300
+#define RPMB_MSB1ST_RESULT_ADDRESS_FAILURE		0x0400
+#define RPMB_MSB1ST_RESULT_WRITE_FAILURE		0x0500
+#define RPMB_MSB1ST_RESULT_READ_FAILURE		0x0600
+#define RPMB_MSB1ST_RESULT_AUTH_KEY_NOT_PROGRAMMED	0x0700
+#define RPMB_MSB1ST_RESULT_MASK			0x3F00
+#define RPMB_MSB1ST_RESULT_WR_CNT_EXPIRED		0x8000
+
 #define IOCTL(fd, request, ...) ioctl_emu((fd), (request), ##__VA_ARGS__)
 
 /* Emulated rel_wr_sec_c value (reliable write size, *256 bytes) */
@@ -351,7 +362,7 @@ static uint16_t compute_hmac(struct rpmb_emu *mem, struct rpmb_data_frame *frm,
 
 	if (!mem->key_set) {
 		EMSG("Cannot compute MAC (key not set)");
-		return RPMB_RESULT_AUTH_KEY_NOT_PROGRAMMED;
+		return RPMB_MSB1ST_RESULT_AUTH_KEY_NOT_PROGRAMMED;
 	}
 
 	hmac_sha256_init(&ctx, mem->key, sizeof(mem->key));
@@ -360,7 +371,7 @@ static uint16_t compute_hmac(struct rpmb_emu *mem, struct rpmb_data_frame *frm,
 	frm--;
 	hmac_sha256_final(&ctx, frm->key_mac, 32);
 
-	return RPMB_RESULT_OK;
+	return RPMB_MSB1ST_RESULT_OK;
 }
 
 static uint16_t ioctl_emu_mem_transfer(struct rpmb_emu *mem,
@@ -374,10 +385,10 @@ static uint16_t ioctl_emu_mem_transfer(struct rpmb_emu *mem,
 
 	if (start > mem->size || start + size > mem->size) {
 		EMSG("Transfer bounds exceeed emulated memory");
-		return RPMB_RESULT_ADDRESS_FAILURE;
+		return RPMB_MSB1ST_RESULT_ADDRESS_FAILURE;
 	}
 	if (to_mmc && !is_hmac_valid(mem, frm, nfrm))
-		return RPMB_RESULT_AUTH_FAILURE;
+		return RPMB_MSB1ST_RESULT_AUTH_FAILURE;
 
 	DMSG("Transferring %zu 256-byte data block%s %s MMC (block offset=%zu)",
 	     nfrm, (nfrm > 1) ? "s" : "", to_mmc ? "to" : "from", start / 256);
@@ -397,14 +408,14 @@ static uint16_t ioctl_emu_mem_transfer(struct rpmb_emu *mem,
 			frm[i].block_count = nfrm;
 			memcpy(frm[i].nonce, mem->nonce, 16);
 		}
-		frm[i].op_result = RPMB_RESULT_OK;
+		frm[i].op_result = RPMB_MSB1ST_RESULT_OK;
 	}
 	dump_blocks(mem->last_op.address, nfrm, mem->buf + start, to_mmc);
 
 	if (!to_mmc)
 		compute_hmac(mem, frm, nfrm);
 
-	return RPMB_RESULT_OK;
+	return RPMB_MSB1ST_RESULT_OK;
 }
 
 static void ioctl_emu_get_write_result(struct rpmb_emu *mem,
@@ -422,13 +433,13 @@ static uint16_t ioctl_emu_setkey(struct rpmb_emu *mem,
 {
 	if (mem->key_set) {
 		EMSG("Key already set");
-		return RPMB_RESULT_GENERAL_FAILURE;
+		return RPMB_MSB1ST_RESULT_GENERAL_FAILURE;
 	}
 	dump_buffer("Setting key", frm->key_mac, 32);
 	memcpy(mem->key, frm->key_mac, 32);
 	mem->key_set = true;
 
-	return RPMB_RESULT_OK;
+	return RPMB_MSB1ST_RESULT_OK;
 }
 
 static void ioctl_emu_get_keyprog_result(struct rpmb_emu *mem,
