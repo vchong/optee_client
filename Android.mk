@@ -66,7 +66,10 @@ LOCAL_SRC_FILES := libckteec/src/pkcs11_api.c \
                    libckteec/src/ck_debug.c \
                    libckteec/src/ck_helpers.c \
                    libckteec/src/invoke_ta.c \
-                   libckteec/src/pkcs11_token.c
+                   libckteec/src/pkcs11_processing.c \
+                   libckteec/src/pkcs11_token.c \
+                   libckteec/src/serializer.c \
+                   libckteec/src/serialize_ck.c
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/public \
                     $(LOCAL_PATH)/libckteec/include
