@@ -10,6 +10,10 @@ CFG_TEE_CLIENT_LOAD_PATH ?= /vendor/lib
 TEEC_TEST_LOAD_PATH ?= /data/vendor/tee
 CFG_TEE_FS_PARENT_PATH ?= /data/vendor/tee
 
+# set CFG_TEE_PLUGIN_LOAD_PATH before include config.mk
+# there is NO /vendor/usr/lib in AOSP
+CFG_TEE_PLUGIN_LOAD_PATH ?= /vendor/lib64/tee-supplicant/plugins/
+
 ################################################################################
 # Include optee-client common config and flags                                 #
 ################################################################################
