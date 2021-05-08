@@ -3,6 +3,10 @@
 ################################################################################
 LOCAL_PATH := $(call my-dir)
 
+# 3 is too high, seemed like can't capture ERR logs
+CFG_TEE_CLIENT_LOG_LEVEL ?= 2
+CFG_TEE_SUPP_LOG_LEVEL ?= 2
+
 # set CFG_TEE_CLIENT_LOAD_PATH before include config.mk
 CFG_TEE_CLIENT_LOAD_PATH ?= /vendor/lib
 
