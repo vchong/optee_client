@@ -76,9 +76,12 @@ static enum plugin_err load_plugin(const char *name, struct plugin *p)
 	void *handle = NULL;
 	struct plugin_method *m = NULL;
 
+	EMSG("dlopen name = %s\n", name);
 	handle = dlopen(name, RTLD_LAZY);
-	if (!handle)
+	if (!handle) {
+		EMSG("return PLUGIN_DL_OPEN_ERR\n");
 		return PLUGIN_DL_OPEN_ERR;
+	}
 
 	p->handle = handle;
 
@@ -113,6 +116,7 @@ TEEC_Result plugin_load_all(void)
 	TEEC_Result teec_res = TEEC_SUCCESS;
 	struct dirent *entry = NULL;
 
+	EMSG("TEE_PLUGIN_LOAD_PATH = %s\n", TEE_PLUGIN_LOAD_PATH);
 	dir = opendir(TEE_PLUGIN_LOAD_PATH);
 	if (!dir) {
 		IMSG("could not open directory %s", TEE_PLUGIN_LOAD_PATH);
