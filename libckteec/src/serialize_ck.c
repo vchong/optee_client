@@ -468,6 +468,19 @@ static CK_RV serialize_mecha_aes_cbc_encrypt_data(struct serializer *obj,
 	return serialize_buffer(obj, param->pData, param->length);
 }
 
+static serialize_mecha_hmac_general(struct serializer *obj,
+				    CK_MECHANISM_PTR mecha)
+{
+	CK_RV rv = CKR_GENERAL_ERROR;
+
+	rv = serialize_32b(obj, obj->type);
+	if (rv)
+		return rv;
+
+	/* serialize output length in bytes (CK_MAC_GENERAL_PARAMS) */
+	return serialize_ck_ulong(obj, *(CK_ULONG *)mecha->pParameter);
+}
+
 /**
  * serialize_ck_mecha_params - serialize a mechanism type & params
  *
@@ -542,6 +555,14 @@ CK_RV serialize_ck_mecha_params(struct serializer *obj,
 
 	case CKM_AES_CBC_ENCRYPT_DATA:
 		return serialize_mecha_aes_cbc_encrypt_data(obj, &mecha);
+
+	case CKM_MD5_HMAC_GENERAL:
+	case CKM_SHA_1_HMAC_GENERAL:
+	case CKM_SHA224_HMAC_GENERAL:
+	case CKM_SHA256_HMAC_GENERAL:
+	case CKM_SHA384_HMAC_GENERAL:
+	case CKM_SHA512_HMAC_GENERAL:
+		return serialize_mecha_hmac_general(obj, &mecha);
 
 	default:
 		return CKR_MECHANISM_INVALID;
