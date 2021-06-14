@@ -477,8 +477,14 @@ static serialize_mecha_hmac_general(struct serializer *obj,
 	if (rv)
 		return rv;
 
+	rv = serialize_32b(obj, mecha->ulParameterLen);
+	if (rv)
+		return rv;
+
+	DMSG("hmac_len = %lu\n", *(CK_ULONG *)mecha->pParameter);
+
 	/* serialize output length in bytes (CK_MAC_GENERAL_PARAMS) */
-	return serialize_ck_ulong(obj, *(CK_ULONG *)mecha->pParameter);
+	return serialize_buffer(obj, mecha->pParameter, mecha->ulParameterLen);
 }
 
 /**
