@@ -9,6 +9,7 @@
 #include <pkcs11_ta.h>
 #include <stdlib.h>
 #include <string.h>
+#include <teec_trace.h>
 
 #include "ck_helpers.h"
 #include "local_utils.h"
@@ -468,7 +469,7 @@ static CK_RV serialize_mecha_aes_cbc_encrypt_data(struct serializer *obj,
 	return serialize_buffer(obj, param->pData, param->length);
 }
 
-static serialize_mecha_hmac_general(struct serializer *obj,
+static CK_RV serialize_mecha_hmac_general(struct serializer *obj,
 				    CK_MECHANISM_PTR mecha)
 {
 	CK_RV rv = CKR_GENERAL_ERROR;
